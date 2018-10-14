@@ -1,0 +1,93 @@
+// Node to write thruster values to ESC using Arduino and read Pressure Sensor Readings 
+// Publishes Depth State Value to PIDControllerD
+// Subsribes ControlEffortCD, ControlEffortCD, ControlEffortAB,  to PIDControllerD, PIDControllerP, PIDControllerY. 
+
+#include <ros/ros.h>
+#include <iostream>
+#include <std_msgs/Float64.h>
+#include <std_msgs/UInt16.h>
+#include <stdlib.h>
+#include <ConCon/tval.h>
+
+using namespace std;
+using namespace ros;
+
+ConCon::t_val PIDeffort ;
+ConCon::t_val BVeffort ;
+ConCon::t_val Cumeffort ;
+
+
+void taMsgRec(const std_msgs::Float64& test)
+{
+	double kite=test.data;
+	int kite2= (int)kite ;
+	PIDeffort.ThrusterA=kite2;
+}
+void tbMsgRec(const std_msgs::Float64& test)
+{
+	double kite=test.data;
+	int kite2= (int)kite ;
+	PIDeffort.ThrusterB=kite2;
+}
+void tcMsgRec(const std_msgs::Float64& test)
+{
+	double kite=test.data;
+	int kite2= (int)kite ;
+	PIDeffort.ThrusterC=kite2;
+}
+void tdMsgRec(const std_msgs::Float64& test)
+{
+	double kite=test.data;
+	int kite2= (int)kite ;
+	PIDeffort.ThrusterD=kite2;
+}
+void teMsgRec(const std_msgs::Float64& test)
+{
+	double kite=test.data;
+	int kite2= (int)kite ;
+	PIDeffort.ThrusterE=kite2;
+}
+void tfMsgRec(const std_msgs::Float64& test)
+{
+	double kite=test.data;
+	int kite2= (int)kite ;
+	PIDeffort.ThrusterF=kite2;
+}
+void BVMsgRec(const ConCon::t_val& test)
+{
+	BVeffort = test ;
+}
+
+
+
+int main(int argc, char** argv)
+{
+    ros::init(argc,argv,"write_IPS");
+	ros::NodeHandle nh;
+    ROS_INFO("write_IPS CALLED!!");
+	ros::Subscriber sub1 = nh.subscribe("bosscon/PID_effort/ThrusterA", 1000, &taMsgRec) ;
+	ros::Subscriber sub2 = nh.subscribe("bosscon/PID_effort/ThrusterB", 1000, &taMsgRec) ;
+	ros::Subscriber sub3 = nh.subscribe("bosscon/PID_effort/ThrusterC", 1000, &taMsgRec) ;
+	ros::Subscriber sub4 = nh.subscribe("bosscon/PID_effort/ThrusterD", 1000, &taMsgRec) ;
+	ros::Subscriber sub5 = nh.subscribe("bosscon/PID_effort/ThrusterE", 1000, &taMsgRec) ;
+	ros::Subscriber sub6 = nh.subscribe("bosscon/PID_effort/ThrusterF", 1000, &taMsgRec) ;
+	ros::Subscriber sub7 = nh.subscribe("bosscon/BV_effort", 1000, &taMsgRec) ;
+	ros::Publisher pub = nh.advertise<ConCon::t_val>("bosscon/motorVal", 1000);
+	
+	srand(time(0)) ;
+    ros::Rate rate(100) ;6
+
+    while(ros::ok()) 
+    {
+    	Cumeffort.ThrusterA = PIDeffort.ThrusterA + BVeffort.ThrusterA ;
+    	Cumeffort.ThrusterB = PIDeffort.ThrusterB + BVeffort.ThrusterB ;
+    	Cumeffort.ThrusterC = PIDeffort.ThrusterC + BVeffort.ThrusterC ;
+    	Cumeffort.ThrusterD = PIDeffort.ThrusterD + BVeffort.ThrusterD ;
+    	Cumeffort.ThrusterE = PIDeffort.ThrusterE + BVeffort.ThrusterE ;
+    	Cumeffort.ThrusterF = PIDeffort.ThrusterF + BVeffort.ThrusterF ;
+    	pub.publish(Cumeffort) ;
+    	ros::spinOnce() ;
+    	rate.sleep();
+    }  
+}
+

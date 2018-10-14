@@ -1,0 +1,6 @@
+float32 depth
+float32 offset
+float32 yaw
+uint16 type
+uint16 speed
+string debug

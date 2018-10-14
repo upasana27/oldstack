@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package>
+  <name>keycon</name>
+  <version>0.6.1</version>
+  <description>Generic keyboard teleop for twist robots.</description>
+
+  <maintainer email="tyagi.aadhar@gmail.com">Aadhar Tyagi</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://wiki.ros.org/teleop_twist_keyboard</url>
+
+  <author>DTU-AUV</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  
+</package>

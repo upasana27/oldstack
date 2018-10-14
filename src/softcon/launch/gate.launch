@@ -1,0 +1,15 @@
+<launch>
+	<group ns="gate">
+		<node
+			pkg = "SoftCon"
+			type = "Boss_Soft"
+			name = "Boss_Soft"
+		/>
+		<node
+			pkg = "SoftCon"
+			type = "Gate"
+			name = "Gate"
+			output = "screen"
+		/>
+	</group>
+</launch>
