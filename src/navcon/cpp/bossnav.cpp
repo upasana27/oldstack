@@ -16,62 +16,30 @@ using namespace std_msgs;
 #define offset_end 2                //to be changed
 float initial_ldistance = float(8); //to be changed
 int pointer = 1, ppointer = 0;
-int point, prpoint, ourownvalue = 5;
 float ldistance = initial_ldistance;
+
+int point, prpoint, ourownvalue = 5;
+
 Float64 rangle;
 int typecast;
+
+int callback_flag = 0;
+
 softcon::tasksTP receivel;
 std_msgs::Float64 test;
-//int offset = 0; // change this when using offset
-//Int16 kite=1;
-
 navcon::tval sendl;
-
-float offset(int &pointer, int &ppointer, float &ldistance)
-{
-    // ldistance can be used to regulate thruster values as it is decreasing over time,
-    // and goes negative once AUV goes to opposite side of desired center
-    cout << "LDist : " << ldistance << endl;
-
-    if (ldistance < offset_end)
-    {
-        ldistance = initial_ldistance;
-        pointer = 1;
-        ppointer = 0;
-        return 0;
-    }
-
-    if (pointer == 0)
-    {
-        ldistance = initial_ldistance;
-        pointer = 1;
-        ppointer = 0;
-        return 0;
-    }
-
-    if (ppointer == pointer)
-    {
-        return pointer * ldistance;
-    }
-
-    else
-    {
-        ppointer = pointer;
-        ldistance = ldistance / 2; //to be changed
-        return pointer * ldistance;
-    }
-}
 
 void callback(const softcon::tasksTP &msg)
 {
     double kite = msg.depth_change;
-    receivel.depth_change = kite;
     test.data = kite;
-    //typecast=receivel.depth;
+
+    receivel.depth_change = kite;
     receivel.offset = msg.offset;
-    //Float64 typecastxcor=receivxcor;
     receivel.speed = msg.speed;
-    //Float64 typecastspeed=receivel.speed;
+    receivel.yaw_change = msg.yaw_change;
+
+    callback_flag = 1;
 }
 
 void callyaw(Float64 x)
@@ -94,42 +62,28 @@ int main(int argc, char **argv)
     Rate rate(10);
     while (ok())
     {
-        //<------------------Finding Thruster values for depth----------------------->
-        sendl.depthright = 1500 + 200 * receivel.depth_change; //review NEEDED
-        sendl.depthleft = 1500 + 200 * receivel.depth_change;  //review -- set value for ourownvalue depending on testing
-
-        // <------------------- Finding Thruster values for offyaw------------------->
-        if (offset)
+        if (callback_flag)
         {
-            sendl.offyawfront = 1500 + 100 / ldistance; //review
-            sendl.offyawback = 1500 - 100 / ldistance;  //review
+            sendl.offyawfront = 1500 + receivel.offset;
+            sendl.offyawback = 1500 - receivel.offset; 
+            sendl.speedleft = 1500 + 100 * receivel.speed;
+            sendl.speedright = 1500 + 100 * receivel.speed;
+            sendl.depthright = 1500 + 200 * receivel.depth_change;
+            sendl.depthleft = 1500 + 200 * receivel.depth_change;
         }
 
         else
         {
             sendl.offyawfront = 1500;
             sendl.offyawback = 1500;
+            sendl.speedleft = 1500;
+            sendl.speedright = 1500;
+            sendl.depthright = 1500;
+            sendl.depthleft = 1500;
         }
 
-        // <------------------- Finding Thruster values for speed------------------->
-        sendl.speedleft = 1500 + 100 * receivel.speed;
-        sendl.speedright = 1500 + 100 * receivel.speed;
+        callback_flag = 0;
 
-        //ldistance=offset(point,prpoint,initial_ldistance);
-        int shift_x = 300 - receivel.offset;
-        if (shift_x < 0)
-        {
-            shift_x = -1;
-        }
-        else if (shift_x == 0)
-        {
-            shift_x = 0;
-        }
-        else
-        {
-            shift_x = 1;
-        }
-        point = shift_x;
         pub.publish(sendl);
         depth.publish(test);
         yaw.publish(rangle);
