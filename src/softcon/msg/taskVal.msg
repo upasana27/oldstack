@@ -1,0 +1,4 @@
+int32 thrust_factor
+int32 yaw_setpoint
+int32 depth_setpoint
+int32 speed_change

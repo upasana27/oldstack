@@ -2,24 +2,28 @@
 #include "std_msgs/Float64.h"
 #include <iostream>
 #include <softcon/oil.h>
-#include <softcon/tasksTP.h>
-#include <softcon/tasksVD.h>
+#include <softcon/taskFlag.h>
+#include <softcon/taskVal.h>
 
 using namespace std;
 using namespace ros;
 using namespace std_msgs;
 float currentdepth, refdepth, relative_depth;
 int flag = 0;
-softcon::tasksVD receivel;
-softcon::tasksTP sendl;
+int val = 0;
+softcon::taskFlag flag_msg;
+softcon::taskVal val_msg;
 
-void callcor(softcon::tasksVD wtf)
+void callflag(softcon::taskFlag wtf)
 {
-    receivel.thrust_factor = wtf.thrust_factor;
-    receivel.depth_setpoint = wtf.depth_setpoint;
-    receivel.yaw_setpoint = wtf.yaw_setpoint;
-    receivel.speed_change = wtf.speed_change;
+    flag_msg = wtf;
     flag = 1;
+}
+
+void callval(softcon::taskVal wtf)
+{
+    val_msg = wtf;
+    val = 0;
 }
 
 void calldepth(const Float64 x)
@@ -33,9 +37,15 @@ int main(int argc, char **argv)
     init(argc, argv, "Software_Boss");
     cout << "Software Boss is Running\n";
     NodeHandle n;
-    Publisher pub = n.advertise<softcon::tasksTP>("softcon/lantern", 1000);
+    
+    Publisher pub_flag = n.advertise<softcon::taskFlag>("softcon/flag_ffa", 1000);
+    Publisher pub_val = n.advertise<softcon::taskVal>("softcon/val_ffa", 1000);
+
     Subscriber subdepth = n.subscribe("concon/statespecs/depth", 1000, &calldepth);
-    Subscriber subtask = n.subscribe("softcon/task", 1000, &callcor);
+    
+    Subscriber subflag = n.subscribe("softcon/flag_to_boss", 1000, &callflag);
+    Subscriber subval = n.subscribe("softcon/val_to_boss", 1000, &calldepth);
+    
     Rate rate(10);
 
     int count = 0;
@@ -48,35 +58,41 @@ int main(int argc, char **argv)
 
         relative_depth = currentdepth - refdepth; //changed from currentdepth + refdepth
 
-        if (!flag)
+        if (flag == 0 || val == 0)
         {
             if (relative_depth < 3) //change in depth between pool surface and water surface,set threshold to turn on thrusters
             {
-                sendl.depth_change = 1;
+                flag_msg.depth_change = 1;
             }
             else if (relative_depth == 3) //to maintain a particular depth,thrusters running
             {
-                sendl.depth_change = 0;
+                flag_msg.depth_change = 0;
             }
             else
             {
-                sendl.depth_change = -1;
+                flag_msg.depth_change = -1;
             }
+
+            //Extra Safeguard (try disabling and see)
+            flag_msg.offset = 0;
+            flag_msg.speed_change = 0;
+            flag_msg.yaw_change = 0;
         }
 
-        else // sendl to navcon, if values are receiveld from a task node
+        else // sendl to navcon, if values are received from a task node
         {
             cout << "workng";
-            sendl.depth_change = receivel.depth_setpoint;
-            sendl.yaw_change = receivel.yaw_setpoint;
-            sendl.speed = receivel.speed_change;
-
-            sendl.offset = 100 * receivel.thrust_factor;
             flag = 0;
+            val = 0;
         }
 
-        ROS_INFO_STREAM(sendl);
-        pub.publish(sendl);
+        ROS_INFO_STREAM("Flags");
+        ROS_INFO_STREAM(flag_msg);
+        pub_flag.publish(flag_msg);
+        
+        ROS_INFO_STREAM("Values");
+        ROS_INFO_STREAM(val_msg);
+        pub_val.publish(val_msg);
         spinOnce();
         rate.sleep();
         ++count;

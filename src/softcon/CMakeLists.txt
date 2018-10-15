@@ -11,8 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   oil.msg
-  tasksTP.msg
-  tasksVD.msg
+  taskFlag.msg
+  taskVal.msg
 )
 
 generate_messages(
