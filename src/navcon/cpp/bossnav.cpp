@@ -88,8 +88,8 @@ int main(int argc, char **argv)
         }
         if (receiveflag.depth_change)
         {
-        	sendl.depthright= 1500+200*receiveval.depth_setpoint;
-        	sendl.depthleft=1500+200*receiveval.depth_setpoint;
+        	sendl.depthright= 1500+200*receiveflag.depth_change;
+        	sendl.depthleft=1500+200*receiveflag.depth_change;
         }
         else
         {

@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     Subscriber subdepth = n.subscribe("concon/statespecs/depth", 1000, &calldepth);
     
     Subscriber subflag = n.subscribe("softcon/flag_to_boss", 1000, &callflag);
-    Subscriber subval = n.subscribe("softcon/val_to_boss", 1000, &calldepth);
+    Subscriber subval = n.subscribe("softcon/val_to_boss", 1000, &callval);
     
     Rate rate(10);
 
@@ -74,9 +74,9 @@ int main(int argc, char **argv)
             }
 
             //Extra Safeguard (try disabling and see)
-            flag_msg.offset = 0;
-            flag_msg.speed_change = 0;
-            flag_msg.yaw_change = 0;
+            // flag_msg.offset = 0;
+            // flag_msg.speed_change = 0;
+            // flag_msg.yaw_change = 0;
         }
 
         else // sendl to navcon, if values are received from a task node
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
         ROS_INFO_STREAM("Flags");
         ROS_INFO_STREAM(flag_msg);
         pub_flag.publish(flag_msg);
-        
+
         ROS_INFO_STREAM("Values");
         ROS_INFO_STREAM(val_msg);
         pub_val.publish(val_msg);
