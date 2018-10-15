@@ -12,7 +12,6 @@ float currentdepth, refdepth, relative_depth;
 int flag=0;
 softcon::tasksVD receivel;
 softcon::tasksTP sendl;
-//softcon::oil send;
 
 
 void callcor(softcon::tasksVD wtf)
@@ -35,7 +34,7 @@ int main(int argc, char **argv)
   init(argc, argv, "Software Boss");
   cout<<"Software Boss is Running\n";
   NodeHandle n;
-  Publisher pub = n.advertise<softcon::oil>("softcon/lantern", 1000);
+  Publisher pub = n.advertise<softcon::tasksTP>("softcon/lantern", 1000);
   Subscriber subdepth = n.subscribe("concon/statespecs/depth", 1000, &calldepth) ;
   Subscriber subtask = n.subscribe("softcon/task", 1000, &callcor) ;
   Rate rate(10);
