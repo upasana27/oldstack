@@ -20,7 +20,7 @@ float ldistance = initial_ldistance;
 Float64 rangle;
 int typecast;
 softcon::oil receivel;
-std_msgs::Float64 test;
+std_msgs::Float64 test; 
 int count=0;
 //int offset = 0; // change this when using offset
 //Int16 kite=1;

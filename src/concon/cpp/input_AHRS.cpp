@@ -24,6 +24,7 @@ std_msgs::Float64 tras1;
 std_msgs::Float64 tras2;
 std_msgs::Float64 yaw;
 navcon::tval ya ;
+
 int main(int argc, char *argv[])
 {
 	 //ofstream outfile;
