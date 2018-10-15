@@ -8,16 +8,17 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
- add_message_files(
-   FILES
-   oil.msg
- )
+add_message_files(
+  FILES
+  oil.msg
+  tasksTP.msg
+  tasksVD.msg
+)
 
 generate_messages(
    DEPENDENCIES
    std_msgs
-
- )
+)
 
 catkin_package(
   #INCLUDE_DIRS include
