@@ -20,7 +20,7 @@ float ldistance = initial_ldistance;
 
 int point, prpoint, ourownvalue = 5;
 
-Float64 rangle;
+std_msgs::Float64 rangle;
 int typecast;
 
 softcon::taskFlag receiveflag;

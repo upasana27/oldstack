@@ -23,6 +23,8 @@ using namespace ros;
 NodeHandle  nh;
 std_msgs::Float64 depth;
 
+depth.data=21; //Modified
+
 navcon::tval x;
 
 void messageCb( const navcon::tval &received){
