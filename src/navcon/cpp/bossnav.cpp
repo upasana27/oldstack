@@ -6,8 +6,8 @@
 #include <iostream>
 #include <navcon/tval.h>
 #include <softcon/oil.h>
-#include <softcon/tasksTP.h>
-#include <softcon/tasksVD.h>
+#include <softcon/taskFlag.h>
+#include <softcon/taskVal.h>
 
 using namespace std;
 using namespace ros;
@@ -23,23 +23,26 @@ int point, prpoint, ourownvalue = 5;
 Float64 rangle;
 int typecast;
 
-int callback_flag = 0;
-
-softcon::tasksTP receivel;
+softcon::taskFlag receiveflag;
+softcon::taskVal receiveval;
 std_msgs::Float64 test;
 navcon::tval sendl;
 
-void callback(const softcon::tasksTP &msg)
+void callback_f(const softcon::taskFlag &msg)
 {
-    double kite = msg.depth_change;
-    test.data = kite;
+    receiveflag.depth_change = msg.depth_change;
+    receiveflag.offset = msg.offset;
+    receiveflag.speed_change = msg.speed_change;
+    receiveflag.yaw_change = msg.yaw_change;
+    ROS_INFO_STREAM ("Flag received.");
+}
 
-    receivel.depth_change = kite;
-    receivel.offset = msg.offset;
-    receivel.speed = msg.speed;
-    receivel.yaw_change = msg.yaw_change;
-
-    callback_flag = 1;
+void callback_v(const softcon::taskVal &msg)
+{
+	receiveval.thrust_factor=msg.thrust_factor;
+	receiveval.yaw_setpoint=msg.yaw_setpoint;
+	receiveval.depth_setpoint=msg.depth_setpoint;
+	receiveval.speed_change=msg.speed_change;
 }
 
 void callyaw(Float64 x)
@@ -58,31 +61,41 @@ int main(int argc, char **argv)
 
     ROS_INFO_STREAM("Navigation boss is running");
     Subscriber subyaw = n.subscribe("softcon/setyaw", 1000, &callyaw);
-    Subscriber sub = n.subscribe("softcon/lantern", 1000, &callback);
+    Subscriber sub1 = n.subscribe("softcon/flag_ffa", 1000, &callback_f);
+    Subscriber sub2 = n.subscribe("softcon/val_ffa", 1000, &callback_v);
     Rate rate(10);
     while (ok())
     {
-        if (callback_flag)
+        if (receiveflag.offset)
         {
-            sendl.offyawfront = 1500 + receivel.offset;
-            sendl.offyawback = 1500 - receivel.offset; 
-            sendl.speedleft = 1500 + 100 * receivel.speed;
-            sendl.speedright = 1500 + 100 * receivel.speed;
-            sendl.depthright = 1500 + 200 * receivel.depth_change;
-            sendl.depthleft = 1500 + 200 * receivel.depth_change;
+            sendl.offyawfront = 1500 + 100*receiveval.thrust_factor;
+            sendl.offyawback = 1500 - 100*receiveval.thrust_factor; 
         }
-
         else
         {
-            sendl.offyawfront = 1500;
-            sendl.offyawback = 1500;
-            sendl.speedleft = 1500;
-            sendl.speedright = 1500;
-            sendl.depthright = 1500;
-            sendl.depthleft = 1500;
+        	sendl.offyawfront = 1500;  
+        	sendl.offyawback = 1500;
         }
-
-        callback_flag = 0;
+        if (receiveflag.speed_change)
+        {
+            sendl.speedleft = 1500 + 100 * receiveval.speed_change;
+            sendl.speedright = 1500 + 100 * receiveval.speed_change;
+        }
+        else
+        {
+        	sendl.speedleft = 1500;
+        	sendl.speedright = 1500;
+        }
+        if (receiveflag.depth_change)
+        {
+        	sendl.depthright= 1500+200*receiveval.depth_setpoint;
+        	sendl.depthleft=1500+200*receiveval.depth_setpoint;
+        }
+        else
+        {
+        	sendl.depthright= 1500;
+        	sendl.depthleft=1500;
+        }
 
         pub.publish(sendl);
         depth.publish(test);
