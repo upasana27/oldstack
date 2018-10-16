@@ -66,9 +66,9 @@ while (ok())
 		if (count==5)
 		 refdepth = curdepth;                          // taking surface depth as reference
 		
-		reldepth = curdepth+refdepth;
+		relative_depth = curdepth-refdepth;
 
-		 if(reldepth<3)                  //change in depth between pool surface and water surface,set threshold to turn on thrusters
+		 if(relative_depth<3)                  //change in depth between pool surface and water surface,set threshold to turn on thrusters
    {
         sendl.depth=0;
     }
