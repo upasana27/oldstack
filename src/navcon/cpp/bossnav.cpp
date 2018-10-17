@@ -96,7 +96,7 @@ int main(int argc, char **argv)
         	sendl.depthright= 1500;
         	sendl.depthleft=1500;
         }
-
+		test.data=receiveval.depth_setpoint;
         pub.publish(sendl);
         depth.publish(test);
         yaw.publish(rangle);
