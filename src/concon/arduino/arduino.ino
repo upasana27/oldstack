@@ -85,7 +85,7 @@ void loop() {
  
  sensor.read();
  currentdepth = sensor.depth();
- if (count == 5)
+ if (count == 1)
         {
             refdepth = currentdepth;
         }

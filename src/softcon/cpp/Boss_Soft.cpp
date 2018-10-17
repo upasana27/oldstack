@@ -5,6 +5,8 @@
 #include <softcon/taskFlag.h>
 #include <softcon/taskVal.h>
 
+#define default_depth 3
+
 using namespace std;
 using namespace ros;
 using namespace std_msgs;
@@ -23,7 +25,7 @@ void callflag(softcon::taskFlag wtf)
 void callval(softcon::taskVal wtf)
 {
     val_msg = wtf;
-    val = 0;
+    val = 1;
 }
 
 void calldepth(const Float64 x)
@@ -58,13 +60,13 @@ int main(int argc, char **argv)
 
         relative_depth = currentdepth - refdepth; //changed from currentdepth + refdepth
 
-        if (flag == 0 || val == 0)
+        /*if (flag == 0 || val == 0)
         {
-            if (relative_depth < 3) //change in depth between pool surface and water surface,set threshold to turn on thrusters
+            if (relative_depth < default_depth) //change in depth between pool surface and water surface,set threshold to turn on thrusters
             {
                 flag_msg.depth_change = 1;
             }
-            else if (relative_depth == 3) //to maintain a particular depth,thrusters running
+            else if (relative_depth == default_depth) //to maintain a particular depth,thrusters running
             {
                 flag_msg.depth_change = 0;
             }
@@ -80,11 +82,25 @@ int main(int argc, char **argv)
         }
 
         else // sendl to navcon, if values are received from a task node
-        {
+        { */
+        	if (flag_msg.depth_change==0)
+        		val_msg.depth_setpoint=default_depth;
+        	if (relative_depth < val_msg.depth_setpoint) 
+            {
+                flag_msg.depth_change = 1;
+            }
+            else if (relative_depth == val_msg.depth_setpoint) 
+            {
+                flag_msg.depth_change = 0;
+            }
+            else
+            {
+                flag_msg.depth_change = -1;
+            }
             cout << "workng";
             flag = 0;
             val = 0;
-        }
+        //}
 
         ROS_INFO_STREAM("Flags");
         ROS_INFO_STREAM(flag_msg);
