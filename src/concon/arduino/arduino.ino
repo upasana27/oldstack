@@ -16,7 +16,8 @@ Servo offyawback;
 Servo speedleft;
 Servo speedright;
 
-
+float currentdepth, refdepth, relative_depth;
+int count=0;
 
 using namespace ros;
 
@@ -83,9 +84,16 @@ void loop() {
      
  
  sensor.read();
- depth.data = sensor.depth();
+ currentdepth = sensor.depth();
+ if (count == 5)
+        {
+            refdepth = currentdepth;
+        }
+ relative_depth=currentdepth-refdepth;
+ depth.data=relative_depth;
  chatter.publish(&depth);
   nh.spinOnce();
+  count++;
   delay(500);
  
 }
