@@ -1,0 +1,8 @@
+prefix=/home/kartikay/Desktop/old-stack/oldstack/install
+
+Name: navcon
+Description: Description of navcon
+Version: 0.0.0
+Cflags: -I/home/kartikay/Desktop/old-stack/oldstack/install/include
+Libs: -L/home/kartikay/Desktop/old-stack/oldstack/install/lib -lnavcon
+Requires: message_runtime

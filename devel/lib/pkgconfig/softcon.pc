@@ -1,0 +1,8 @@
+prefix=/home/kartikay/Desktop/old-stack/oldstack/devel
+
+Name: softcon
+Description: Description of softcon
+Version: 0.0.0
+Cflags: -I/home/kartikay/Desktop/old-stack/oldstack/devel/include
+Libs: -L/home/kartikay/Desktop/old-stack/oldstack/devel/lib -lsoftcon
+Requires: roscpp rospy std_msgs message_runtime

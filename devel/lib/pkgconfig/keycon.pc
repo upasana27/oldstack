@@ -1,0 +1,8 @@
+prefix=/home/kartikay/Desktop/old-stack/oldstack/devel
+
+Name: keycon
+Description: Description of keycon
+Version: 0.6.1
+Cflags: -I/home/kartikay/Desktop/old-stack/oldstack/devel/include
+Libs: -L/home/kartikay/Desktop/old-stack/oldstack/devel/lib -lnavcon
+Requires: message_runtime
